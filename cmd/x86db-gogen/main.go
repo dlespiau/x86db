@@ -22,6 +22,12 @@ func nasmOpcodeToPlan9(op string) string {
 	case "CMPEQSS", "CMPLTSS", "CMPLESS", "CMPUNORDSS", "CMPNEQSS", "CMPNLTSS",
 		"CMPNLESS", "CMPORDSS":
 		return "CMPSS"
+	case "CVTSI2SS":
+		return "CVTSL2SS"
+	case "CVTSS2SI":
+		return "CVTSS2SL"
+	case "CVTTSS2SI":
+		return "CVTTSS2SL"
 	}
 
 	return op

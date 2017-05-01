@@ -37,6 +37,12 @@ func isAlreadyKnown(name string) bool {
 	return false
 }
 
+func isAlreadyTested(name string) bool {
+	name = nasmOpcodeToPlan9(name)
+	_, ok := testedMap[name]
+	return ok
+}
+
 func main() {
 	db := x86db.NewDB(os.Args[1])
 

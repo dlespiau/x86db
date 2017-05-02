@@ -50,6 +50,9 @@ func nasmOpcodeToPlan9(op string) string {
 	case "CMPEQSD", "CMPLTSD", "CMPLESD", "CMPUNORDSD", "CMPNEQSD", "CMPNLTSD",
 		"CMPNLESD", "CMPORDSD":
 		return "CMPSD"
+	// D (double word) has been replaced by L (Long)
+	case "PSUBD":
+		return "PSUBL"
 	}
 
 	return op

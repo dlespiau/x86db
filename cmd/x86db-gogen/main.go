@@ -66,8 +66,8 @@ func main() {
 	}
 	defer db.Close()
 
-	// SSE instructions, not already known by the Go's cmd/internal/obj package.
-	insns := db.FindByExtension(x86db.ExtensionSSE).Where(func(insn x86db.Instruction) bool {
+	// SSE2 instructions, not already known by the Go's cmd/internal/obj package.
+	insns := db.FindByExtension(x86db.ExtensionSSE2).Where(func(insn x86db.Instruction) bool {
 		return !isAlreadyKnown(insn.Name)
 	})
 

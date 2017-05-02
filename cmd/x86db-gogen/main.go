@@ -38,6 +38,20 @@ func nasmOpcodeToPlan9(op string) string {
 		return "PCLMULQDQ"
 	}
 
+	/*
+	 * SSE2
+	 */
+	switch op {
+	// The condition is encoded as an imm8 operand of CMPPD
+	case "CMPEQPD", "CMPLTPD", "CMPLEPD", "CMPUNORDPD", "CMPNEQPD", "CMPNLTPD",
+		"CMPNLEPD", "CMPORDPD":
+		return "CMPPD"
+	// The condition is encoded as an imm8 operand of CMPSD.
+	case "CMPEQSD", "CMPLTSD", "CMPLESD", "CMPUNORDSD", "CMPNEQSD", "CMPNLTSD",
+		"CMPNLESD", "CMPORDSD":
+		return "CMPSD"
+	}
+
 	return op
 }
 

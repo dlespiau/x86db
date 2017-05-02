@@ -30,6 +30,14 @@ func nasmOpcodeToPlan9(op string) string {
 		return "CVTTSS2SL"
 	}
 
+	/*
+	 * PCLMULQDQ
+	 */
+	switch op {
+	case "PCLMULLQLQDQ", "PCLMULHQLQDQ", "PCLMULLQHQDQ", "PCLMULHQHQDQ":
+		return "PCLMULQDQ"
+	}
+
 	return op
 }
 

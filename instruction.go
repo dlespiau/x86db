@@ -146,7 +146,7 @@ func ExtensionFromString(name string) (Extension, error) {
 		}
 	}
 
-	return ExtensionBase, fmt.Errorf("no Extension with name '%s", name)
+	return ExtensionBase, fmt.Errorf("no Extension with name '%s'", name)
 }
 
 // +gen slice:"Where"

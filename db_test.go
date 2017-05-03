@@ -29,7 +29,7 @@ func TestReadInstructions(t *testing.T) {
 
 	for _, test := range tests {
 		r := strings.NewReader(test.input)
-		db := NewDB("")
+		db := DB{}
 
 		err := db.readInstructions(r)
 		if !test.valid {

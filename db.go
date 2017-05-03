@@ -2,6 +2,7 @@ package x86db
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -15,7 +16,11 @@ type DB struct {
 	Instructions     InstructionSlice
 }
 
-func NewDB(instructionsFile string) *DB {
+func NewDB() *DB {
+	return NewDBFomFile("")
+}
+
+func NewDBFomFile(instructionsFile string) *DB {
 	return &DB{
 		instructionsFile: instructionsFile,
 	}
@@ -95,13 +100,28 @@ next:
 
 // Open loads instructions from disk.
 func (db *DB) Open() error {
-	f, err := os.Open(db.instructionsFile)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
+	var r io.Reader
 
-	if err := db.readInstructions(f); err != nil {
+	if db.instructionsFile == "" {
+		// Use the insns.dat bundled with the package
+		data, err := Asset("data/insns.dat")
+		if err != nil {
+			return err
+		}
+
+		r = bytes.NewReader(data)
+	} else {
+		// db file provided by the user
+		f, err := os.Open(db.instructionsFile)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		r = f
+	}
+
+	if err := db.readInstructions(r); err != nil {
 		return err
 	}
 

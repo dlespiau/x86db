@@ -127,9 +127,9 @@ func usage() {
 }
 
 func main() {
-	db := x86db.NewDB(os.Args[1])
+	db := x86db.NewDB()
 
-	if err := filterFlags.Parse(os.Args[3:]); err != nil {
+	if err := filterFlags.Parse(os.Args[2:]); err != nil {
 		log.Fatal(err)
 	}
 
@@ -171,7 +171,7 @@ func main() {
 		})
 	}
 
-	cmdName := os.Args[2]
+	cmdName := os.Args[1]
 	handled := false
 	for _, cmd := range commands {
 		if cmd.name != cmdName {

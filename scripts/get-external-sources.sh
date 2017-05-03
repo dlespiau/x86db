@@ -6,6 +6,10 @@ scripts=$(dirname "$0")
 root="$scripts/.."
 gogen="$root/cmd/x86db-gogen"
 
+#
+# Generate the map of known-to-be-tested instructions. This is based on the of
+# instructions tested in Go's assembler amd64enc.go.
+#
 curl -s --show-error -o "$scripts/amd64enc.s" https://raw.githubusercontent.com/golang/go/master/src/cmd/asm/internal/asm/testdata/amd64enc.s
 
 cat <<EOF > "$gogen/tested_map.go"
@@ -28,3 +32,9 @@ cat <<EOF >> "$gogen/tested_map.go"
 EOF
 
 rm "$scripts/amd64enc.s"
+
+#
+# Generate insnsData, a raw const string with the content of insns.dat.
+# go get -u github.com/jteeuwen/go-bindata/go-bindata
+#
+(cd "$root" && go-bindata -o assets.go -pkg x86db data/)

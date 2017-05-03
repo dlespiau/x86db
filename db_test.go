@@ -38,10 +38,10 @@ func TestReadInstructions(t *testing.T) {
 		}
 
 		assert.Nil(t, err)
-		assert.Equal(t, 1, len(db.instructions))
+		assert.Equal(t, 1, len(db.Instructions))
 
 		g := &test.golden
-		parsed := &db.instructions[0]
+		parsed := &db.Instructions[0]
 
 		assert.Equal(t, g.Name, parsed.Name)
 		assert.Equal(t, g.OpSize, parsed.OpSize)

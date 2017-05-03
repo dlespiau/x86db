@@ -12,7 +12,7 @@ import (
 // DB holds the list of known instructions
 type DB struct {
 	instructionsFile string
-	instructions     InstructionSlice
+	Instructions     InstructionSlice
 }
 
 func NewDB(instructionsFile string) *DB {
@@ -87,7 +87,7 @@ next:
 			Extension: extension,
 			OpSize:    opSizeFlags,
 		}
-		db.instructions = append(db.instructions, instruction)
+		db.Instructions = append(db.Instructions, instruction)
 	}
 
 	return nil
@@ -116,7 +116,7 @@ func (db *DB) Close() {
 // FindByExtension returns the list of instructions introduced as part of the
 // specificied extension.
 func (db *DB) FindByExtension(extension Extension) InstructionSlice {
-	return db.instructions.Where(func(insn Instruction) bool {
+	return db.Instructions.Where(func(insn Instruction) bool {
 		return insn.Extension == extension
 	})
 }

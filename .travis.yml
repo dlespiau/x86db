@@ -1,0 +1,6 @@
+language: go
+script:
+  - go build ./...
+  - go test -v ./...
+notifications:
+  email: false

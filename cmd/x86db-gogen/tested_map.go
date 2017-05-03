@@ -30,6 +30,7 @@ var testedMap = map[string]bool{
 	"ANDNPS": true,
 	"ANDNQ": true,
 	"ANDPD": true,
+	"ANDPS": true,
 	"ANDQ": true,
 	"ANDW": true,
 	"BEXTRL": true,

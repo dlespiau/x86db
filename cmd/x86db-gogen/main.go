@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -74,8 +75,63 @@ func isAlreadyTested(name string) bool {
 	return ok
 }
 
+func doHelp(insns x86db.InstructionSlice) {
+	usage()
+}
+
+func doList(insns x86db.InstructionSlice) {
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+	for _, insn := range insns {
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", insn.Name, insn.Operands, insn.Pattern, insn.Flags)
+	}
+	w.Flush()
+}
+
+var (
+	filterFlags = flag.NewFlagSet("filter", flag.ExitOnError)
+	extension   = filterFlags.String("extension", "",
+		"select instructions by extension")
+	known = filterFlags.Bool("known", false,
+		"select instructions already known by the go assembler")
+	notKnown = filterFlags.Bool("not-known", false,
+		"select instructions not already known by the go assembler")
+	tested = filterFlags.Bool("tested", false,
+		"select instructions with test cases in the go assembler")
+	notTested = filterFlags.Bool("not-tested", false,
+		"select instructions with no test case in the go assembler")
+)
+
+type command struct {
+	name    string
+	help    string
+	handler func(x86db.InstructionSlice)
+}
+
+var commands = []command{
+	{"help", "print this help", nil},
+	{"list", "list x86 instructions", doList},
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage:\n\n")
+	fmt.Fprintf(os.Stderr, "  x86db-gogen command [options]\n\n")
+	fmt.Fprintf(os.Stderr, "List of commands:\n\n")
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
+	for _, cmd := range commands {
+		fmt.Fprintf(w, "  %s\t%s\n", cmd.name, cmd.help)
+	}
+	w.Flush()
+	fmt.Fprintf(os.Stderr, "\n")
+	fmt.Fprintf(os.Stderr, "Filtering options:\n\n")
+	filterFlags.PrintDefaults()
+}
+
 func main() {
 	db := x86db.NewDB(os.Args[1])
+
+	if err := filterFlags.Parse(os.Args[3:]); err != nil {
+		log.Fatal(err)
+	}
 
 	err := db.Open()
 	if err != nil {
@@ -83,14 +139,55 @@ func main() {
 	}
 	defer db.Close()
 
-	// SSE2 instructions, not already known by the Go's cmd/internal/obj package.
-	insns := db.FindByExtension(x86db.ExtensionSSE2).Where(func(insn x86db.Instruction) bool {
-		return !isAlreadyKnown(insn.Name)
-	})
+	insns := db.Instructions
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
-	for _, insn := range insns {
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", insn.Name, insn.Operands, insn.Pattern, insn.Flags)
+	if *extension != "" {
+		ext, err := x86db.ExtensionFromString(*extension)
+		if err != nil {
+			log.Fatal(err)
+		}
+		insns = insns.Where(func(insn x86db.Instruction) bool {
+			return insn.Extension == ext
+		})
 	}
-	w.Flush()
+
+	if *known || *notKnown {
+		insns = insns.Where(func(insn x86db.Instruction) bool {
+			k := isAlreadyKnown(insn.Name)
+			if *notKnown {
+				return !k
+			}
+			return k
+		})
+	}
+
+	if *tested || *notTested {
+		insns = insns.Where(func(insn x86db.Instruction) bool {
+			t := isAlreadyTested(insn.Name)
+			if *notTested {
+				return !t
+			}
+			return t
+		})
+	}
+
+	cmdName := os.Args[2]
+	handled := false
+	for _, cmd := range commands {
+		if cmd.name != cmdName {
+			continue
+		}
+		if cmd.handler == nil {
+			continue
+		}
+
+		handled = true
+		cmd.handler(insns)
+	}
+
+	if !handled {
+		fmt.Fprintf(os.Stderr, "unknown command '%s'\n\n", cmdName)
+		usage()
+		os.Exit(1)
+	}
 }

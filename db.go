@@ -72,7 +72,7 @@ next:
 				continue
 			}
 
-			e, err := extensionFromString(field)
+			e, err := ExtensionFromString(field)
 			if err == nil {
 				extension = e
 				continue

@@ -139,7 +139,7 @@ var extensionTab = []extensionInfo{
 	{ExtensionAVX512VBMI, "AVX512VBMI", "AVX-512 VBMI instructions"},
 }
 
-func extensionFromString(name string) (Extension, error) {
+func ExtensionFromString(name string) (Extension, error) {
 	for _, info := range extensionTab {
 		if info.name == name {
 			return info.ext, nil

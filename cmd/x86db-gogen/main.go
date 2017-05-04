@@ -76,6 +76,22 @@ func isAlreadyTested(name string) bool {
 	return ok
 }
 
+func isMMXOperand(op string) bool {
+	if op == "mmxreg" || op == "mmxrm" || op == "mmxrm64" {
+		return true
+	}
+	return false
+}
+
+func isMMX(insn *x86db.Instruction) bool {
+	for _, op := range insn.Operands {
+		if isMMXOperand(op) {
+			return true
+		}
+	}
+	return false
+}
+
 func doHelp(insns x86db.InstructionSlice) {
 	usage()
 }
@@ -93,6 +109,8 @@ var (
 	filterFlags = flag.NewFlagSet("filter", flag.ExitOnError)
 	extension   = filterFlags.String("extension", "",
 		"select instructions by extension")
+	noMMX = filterFlags.Bool("no-mmx", false,
+		"do not select instructions taking MMX operands")
 	known = filterFlags.Bool("known", false,
 		"select instructions already known by the go assembler")
 	notKnown = filterFlags.Bool("not-known", false,
@@ -150,6 +168,12 @@ func main() {
 		}
 		insns = insns.Where(func(insn x86db.Instruction) bool {
 			return insn.Extension == ext
+		})
+	}
+
+	if *noMMX {
+		insns = insns.Where(func(insn x86db.Instruction) bool {
+			return !isMMX(&insn)
 		})
 	}
 

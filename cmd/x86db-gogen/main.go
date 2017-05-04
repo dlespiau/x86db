@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/dlespiau/x86db"
@@ -82,7 +83,8 @@ func doHelp(insns x86db.InstructionSlice) {
 func doList(insns x86db.InstructionSlice) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 	for _, insn := range insns {
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", insn.Name, insn.Operands, insn.Pattern, insn.Flags)
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", insn.Name,
+			strings.Join(insn.Operands, ","), insn.Pattern, insn.Flags)
 	}
 	w.Flush()
 }

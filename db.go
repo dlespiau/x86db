@@ -86,7 +86,7 @@ next:
 
 		instruction := Instruction{
 			Name:      string(fields[1]),
-			Operands:  string(fields[2]),
+			Operands:  strings.Split(string(fields[2]), ","),
 			Pattern:   string(fields[3]),
 			Flags:     string(fields[4]),
 			Extension: extension,

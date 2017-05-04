@@ -152,7 +152,7 @@ func ExtensionFromString(name string) (Extension, error) {
 // +gen slice:"Where"
 type Instruction struct {
 	Name      string
-	Operands  string
+	Operands  []string
 	Pattern   string
 	Flags     string
 	Extension Extension

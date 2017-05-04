@@ -15,15 +15,27 @@ func TestReadInstructions(t *testing.T) {
 	}{
 		{
 			`SBB    reg_eax,sbytedword    [mi:  o32 83 /3 ib,s]    386,SM,ND`, true,
-			Instruction{Name: "SBB", OpSize: OpSizeSM},
+			Instruction{
+				Name:     "SBB",
+				Operands: []string{"reg_eax", "sbytedword"},
+				OpSize:   OpSizeSM,
+			},
 		},
 		{
 			`MOV    reg64,sdword          [mi:  o64 c7 /0 id,s]    X64,SM,OPT,ND`, true,
-			Instruction{Name: "MOV", OpSize: OpSizeSM | OpSizeOPT},
+			Instruction{
+				Name:     "MOV",
+				Operands: []string{"reg64", "sdword"},
+				OpSize:   OpSizeSM | OpSizeOPT,
+			},
 		},
 		{
 			`ADDPS  xmmreg,xmmrm128       [rm:    np 0f 58 /r]     KATMAI,SSE`, true,
-			Instruction{Name: "ADDPS", Extension: ExtensionSSE},
+			Instruction{
+				Name:      "ADDPS",
+				Operands:  []string{"xmmreg", "xmmrm128"},
+				Extension: ExtensionSSE,
+			},
 		},
 	}
 
@@ -44,6 +56,7 @@ func TestReadInstructions(t *testing.T) {
 		parsed := &db.Instructions[0]
 
 		assert.Equal(t, g.Name, parsed.Name)
+		assert.Equal(t, g.Operands, parsed.Operands)
 		assert.Equal(t, g.OpSize, parsed.OpSize)
 	}
 }

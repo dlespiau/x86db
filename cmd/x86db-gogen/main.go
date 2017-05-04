@@ -60,8 +60,8 @@ func nasmOpcodeToPlan9(op string) string {
 	return op
 }
 
-func isAlreadyKnown(name string) bool {
-	name = nasmOpcodeToPlan9(name)
+func isAlreadyKnown(insn *x86db.Instruction) bool {
+	name := nasmOpcodeToPlan9(insn.Name)
 	for _, opcode := range Anames {
 		if name == opcode {
 			return true
@@ -70,8 +70,8 @@ func isAlreadyKnown(name string) bool {
 	return false
 }
 
-func isAlreadyTested(name string) bool {
-	name = nasmOpcodeToPlan9(name)
+func isAlreadyTested(insn *x86db.Instruction) bool {
+	name := nasmOpcodeToPlan9(insn.Name)
 	_, ok := testedMap[name]
 	return ok
 }
@@ -179,7 +179,7 @@ func main() {
 
 	if *known || *notKnown {
 		insns = insns.Where(func(insn x86db.Instruction) bool {
-			k := isAlreadyKnown(insn.Name)
+			k := isAlreadyKnown(&insn)
 			if *notKnown {
 				return !k
 			}
@@ -189,7 +189,7 @@ func main() {
 
 	if *tested || *notTested {
 		insns = insns.Where(func(insn x86db.Instruction) bool {
-			t := isAlreadyTested(insn.Name)
+			t := isAlreadyTested(&insn)
 			if *notTested {
 				return !t
 			}

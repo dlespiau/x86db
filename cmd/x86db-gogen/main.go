@@ -109,7 +109,7 @@ var (
 	filterFlags = flag.NewFlagSet("filter", flag.ExitOnError)
 	extension   = filterFlags.String("extension", "",
 		"select instructions by extension")
-	noMMX = filterFlags.Bool("no-mmx", false,
+	notMMX = filterFlags.Bool("not-mmx", false,
 		"do not select instructions taking MMX operands")
 	known = filterFlags.Bool("known", false,
 		"select instructions already known by the go assembler")
@@ -171,7 +171,7 @@ func main() {
 		})
 	}
 
-	if *noMMX {
+	if *notMMX {
 		insns = insns.Where(func(insn x86db.Instruction) bool {
 			return !isMMX(&insn)
 		})

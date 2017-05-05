@@ -55,6 +55,30 @@ func nasmOpcodeToPlan9(op string) string {
 	// D (double word) has been replaced by L (Long)
 	case "PSUBD":
 		return "PSUBL"
+	case "MASKMOVDQU":
+		return "MASKMOVOU"
+	case "MOVD":
+		return "MOVQ"
+	case "MOVDQ2Q":
+		return "MOVQ"
+	case "MOVNTDQ":
+		return "MOVNTO"
+	case "MOVDQA":
+		return "MOVO"
+	case "MOVDQU":
+		return "MOVOU"
+	case "PSLLD":
+		return "PSLLL"
+	case "PSLLDQ":
+		return "PSLLO"
+	case "PSRAD":
+		return "PSRAL"
+	case "PSRLD":
+		return "PSRLL"
+	case "PSRLDQ":
+		return "PSRLO"
+	case "PADDD":
+		return "PADDL"
 	}
 
 	return op

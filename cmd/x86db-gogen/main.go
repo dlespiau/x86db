@@ -79,6 +79,24 @@ func nasmOpcodeToPlan9(op string) string {
 		return "PSRLO"
 	case "PADDD":
 		return "PADDL"
+	case "PACKSSDW":
+		return "PACKSSLW"
+	case "PCMPEQD":
+		return "PCMPEQL"
+	case "PCMPGTD":
+		return "PCMPGTL"
+	case "PMADDWD":
+		return "PMADDWL"
+	case "PMULUDQ":
+		return "PMULULQ"
+	case "PUNPCKHWD":
+		return "PUNPCKHWL"
+	case "PUNPCKHDQ":
+		return "PUNPCKHLQ"
+	case "PUNPCKLWD":
+		return "PUNPCKLWL"
+	case "PUNPCKLDQ":
+		return "PUNPCKLLQ"
 	}
 
 	return op

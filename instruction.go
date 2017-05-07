@@ -98,13 +98,15 @@ const (
 	ExtensionAVX512VBMI
 )
 
-type extensionInfo struct {
-	ext  Extension
-	name string
-	help string
+// ExtensionInfo stores metadata about an extension.
+type ExtensionInfo struct {
+	Extension Extension
+	Name      string
+	Help      string
 }
 
-var extensionTab = []extensionInfo{
+// ExtensionList is the list of known extensions.
+var ExtensionList = []ExtensionInfo{
 	{ExtensionFPU, "FPU", "FPU"},
 	{ExtensionMMX, "MMX", "MMX"},
 	{Extension3DNOW, "3DNOW", "3DNow!"},
@@ -140,9 +142,9 @@ var extensionTab = []extensionInfo{
 }
 
 func ExtensionFromString(name string) (Extension, error) {
-	for _, info := range extensionTab {
-		if info.name == name {
-			return info.ext, nil
+	for _, info := range ExtensionList {
+		if info.Name == name {
+			return info.Extension, nil
 		}
 	}
 

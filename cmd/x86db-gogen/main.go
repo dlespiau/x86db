@@ -220,6 +220,14 @@ func main() {
 	insns := db.Instructions
 
 	if *extension != "" {
+		if *extension == "help" {
+			w := tabwriter.NewWriter(os.Stdout, 0, 0, 4, ' ', 0)
+			for _, info := range x86db.ExtensionList {
+				fmt.Fprintf(w, "  %s\t%s\n", info.Name, info.Help)
+			}
+			w.Flush()
+			os.Exit(0)
+		}
 		ext, err := x86db.ExtensionFromString(*extension)
 		if err != nil {
 			log.Fatal(err)

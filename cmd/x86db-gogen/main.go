@@ -150,10 +150,6 @@ func isMMX(insn *x86db.Instruction) bool {
 	return false
 }
 
-func doHelp(insns x86db.InstructionSlice) {
-	usage()
-}
-
 func doList(insns x86db.InstructionSlice) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 	for _, insn := range insns {

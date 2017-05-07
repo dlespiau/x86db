@@ -16,11 +16,14 @@ type DB struct {
 	Instructions     InstructionSlice
 }
 
+// NewDB creates a new DB object.
 func NewDB() *DB {
-	return NewDBFomFile("")
+	return NewDBFromFile("")
 }
 
-func NewDBFomFile(instructionsFile string) *DB {
+// NewDBFromFile creates a new DB object, loading the list of instructions from
+// instructionsFile. The format of instructionsFile is the nasm one.
+func NewDBFromFile(instructionsFile string) *DB {
 	return &DB{
 		instructionsFile: instructionsFile,
 	}

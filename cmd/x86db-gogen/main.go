@@ -97,6 +97,17 @@ var nasmToPlan9 = map[string]string{
 	"PUNPCKHWD":  "PUNPCKHWL",
 	"PUNPCKLDQ":  "PUNPCKLLQ",
 	"PUNPCKLWD":  "PUNPCKLWL",
+
+	// Conversions
+	"CVTDQ2PD":  "CVTPL2PD",
+	"CVTDQ2PS":  "CVTPL2PS",
+	"CVTPD2DQ":  "CVTPD2PL",
+	"CVTPS2DQ":  "CVTPS2PL",
+	"CVTSD2SI":  "CVTSD2SL",
+	"CVTSI2SD":  "CVTSL2SD",
+	"CVTTPD2DQ": "CVTTPD2PL",
+	"CVTTPS2DQ": "CVTTPS2PL",
+	"CVTTSD2SI": "CVTTSD2SL",
 }
 
 func nasmOpcodeToPlan9(op string) string {

@@ -11,94 +11,99 @@ import (
 	"github.com/dlespiau/x86db"
 )
 
-func nasmOpcodeToPlan9(op string) string {
-	/*
-	 * SSE
-	 */
-	switch op {
+var nasmToPlan9 = map[string]string{
+	//
+	// SSE
+	//
+
 	// The condition is encoded as an imm8 operand of CMPPS
-	case "CMPEQPS", "CMPLTPS", "CMPLEPS", "CMPUNORDPS", "CMPNEQPS", "CMPNLTPS",
-		"CMPNLEPS", "CMPORDPS":
-		return "CMPPS"
+	"CMPEQPS":    "CMPPS",
+	"CMPLTPS":    "CMPPS",
+	"CMPLEPS":    "CMPPS",
+	"CMPUNORDPS": "CMPPS",
+	"CMPNEQPS":   "CMPPS",
+	"CMPNLTPS":   "CMPPS",
+	"CMPNLEPS":   "CMPPS",
+	"CMPORDPS":   "CMPPS",
+
 	// The condition is encoded as an imm8 operand of CMPSS.
-	case "CMPEQSS", "CMPLTSS", "CMPLESS", "CMPUNORDSS", "CMPNEQSS", "CMPNLTSS",
-		"CMPNLESS", "CMPORDSS":
-		return "CMPSS"
-	case "CVTSI2SS":
-		return "CVTSL2SS"
-	case "CVTSS2SI":
-		return "CVTSS2SL"
-	case "CVTTSS2SI":
-		return "CVTTSS2SL"
-	}
+	"CMPEQSS":    "CMPSS",
+	"CMPLTSS":    "CMPSS",
+	"CMPLESS":    "CMPSS",
+	"CMPUNORDSS": "CMPSS",
+	"CMPNEQSS":   "CMPSS",
+	"CMPNLTSS":   "CMPSS",
+	"CMPNLESS":   "CMPSS",
+	"CMPORDSS":   "CMPSS",
 
-	/*
-	 * PCLMULQDQ
-	 */
-	switch op {
-	case "PCLMULLQLQDQ", "PCLMULHQLQDQ", "PCLMULLQHQDQ", "PCLMULHQHQDQ":
-		return "PCLMULQDQ"
-	}
+	"CVTSI2SS":  "CVTSL2SS",
+	"CVTSS2SI":  "CVTSS2SL",
+	"CVTTSS2SI": "CVTTSS2SL",
 
-	/*
-	 * SSE2
-	 */
-	switch op {
+	//
+	// PCLMULQDQ
+	//
+
+	"PCLMULLQLQDQ": "PCLMULQDQ",
+	"PCLMULHQLQDQ": "PCLMULQDQ",
+	"PCLMULLQHQDQ": "PCLMULQDQ",
+	"PCLMULHQHQDQ": "PCLMULQDQ",
+
+	//
+	// SSE2
+	//
+
 	// The condition is encoded as an imm8 operand of CMPPD
-	case "CMPEQPD", "CMPLTPD", "CMPLEPD", "CMPUNORDPD", "CMPNEQPD", "CMPNLTPD",
-		"CMPNLEPD", "CMPORDPD":
-		return "CMPPD"
-	// The condition is encoded as an imm8 operand of CMPSD.
-	case "CMPEQSD", "CMPLTSD", "CMPLESD", "CMPUNORDSD", "CMPNEQSD", "CMPNLTSD",
-		"CMPNLESD", "CMPORDSD":
-		return "CMPSD"
-	// D (double word) has been replaced by L (Long)
-	case "PSUBD":
-		return "PSUBL"
-	case "MASKMOVDQU":
-		return "MASKMOVOU"
-	case "MOVD":
-		return "MOVQ"
-	case "MOVDQ2Q":
-		return "MOVQ"
-	case "MOVNTDQ":
-		return "MOVNTO"
-	case "MOVDQA":
-		return "MOVO"
-	case "MOVDQU":
-		return "MOVOU"
-	case "PSLLD":
-		return "PSLLL"
-	case "PSLLDQ":
-		return "PSLLO"
-	case "PSRAD":
-		return "PSRAL"
-	case "PSRLD":
-		return "PSRLL"
-	case "PSRLDQ":
-		return "PSRLO"
-	case "PADDD":
-		return "PADDL"
-	case "PACKSSDW":
-		return "PACKSSLW"
-	case "PCMPEQD":
-		return "PCMPEQL"
-	case "PCMPGTD":
-		return "PCMPGTL"
-	case "PMADDWD":
-		return "PMADDWL"
-	case "PMULUDQ":
-		return "PMULULQ"
-	case "PUNPCKHWD":
-		return "PUNPCKHWL"
-	case "PUNPCKHDQ":
-		return "PUNPCKHLQ"
-	case "PUNPCKLWD":
-		return "PUNPCKLWL"
-	case "PUNPCKLDQ":
-		return "PUNPCKLLQ"
-	}
+	"CMPEQPD":    "CMPPD",
+	"CMPLTPD":    "CMPPD",
+	"CMPLEPD":    "CMPPD",
+	"CMPUNORDPD": "CMPPD",
+	"CMPNEQPD":   "CMPPD",
+	"CMPNLTPD":   "CMPPD",
+	"CMPNLEPD":   "CMPPD",
+	"CMPORDPD":   "CMPPD",
 
+	// The condition is encoded as an imm8 operand of CMPSD.
+	"CMPEQSD":    "CMPSD",
+	"CMPLTSD":    "CMPSD",
+	"CMPLESD":    "CMPSD",
+	"CMPUNORDSD": "CMPSD",
+	"CMPNEQSD":   "CMPSD",
+	"CMPNLTSD":   "CMPSD",
+	"CMPNLESD":   "CMPSD",
+	"CMPORDSD":   "CMPSD",
+
+	// D (double word) has been replaced by L (Long)
+	// DQ (double quadword) has been replaced by O (Octoword)
+	"MASKMOVDQU": "MASKMOVOU",
+	"MOVD":       "MOVQ",
+	"MOVDQ2Q":    "MOVQ",
+	"MOVDQA":     "MOVO",
+	"MOVDQU":     "MOVOU",
+	"MOVNTDQ":    "MOVNTO",
+	"PACKSSDW":   "PACKSSLW",
+	"PADDD":      "PADDL",
+	"PCMPEQD":    "PCMPEQL",
+	"PCMPGTD":    "PCMPGTL",
+	"PMADDWD":    "PMADDWL",
+	"PMULUDQ":    "PMULULQ",
+	"PSLLD":      "PSLLL",
+	"PSLLDQ":     "PSLLO",
+	"PSRAD":      "PSRAL",
+	"PSRLD":      "PSRLL",
+	"PSRLDQ":     "PSRLO",
+	"PSUBD":      "PSUBL",
+	"PUNPCKHDQ":  "PUNPCKHLQ",
+	"PUNPCKHWD":  "PUNPCKHWL",
+	"PUNPCKLDQ":  "PUNPCKLLQ",
+	"PUNPCKLWD":  "PUNPCKLWL",
+}
+
+func nasmOpcodeToPlan9(op string) string {
+	plan9, ok := nasmToPlan9[op]
+	if ok {
+		return plan9
+	}
 	return op
 }
 

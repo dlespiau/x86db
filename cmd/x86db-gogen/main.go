@@ -151,10 +151,11 @@ func isMMX(insn *x86db.Instruction) bool {
 }
 
 func doList(insns x86db.InstructionSlice) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	for _, insn := range insns {
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", insn.Name,
-			strings.Join(insn.Operands, ","), insn.Pattern, insn.Flags)
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", insn.Name,
+			strings.Join(insn.Operands, ","), insn.Pattern.Operands,
+			strings.Join(insn.Pattern.Opcodes, " "), insn.Flags)
 	}
 	w.Flush()
 }

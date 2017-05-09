@@ -1,6 +1,9 @@
 package x86db
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type OpSize uint32
 
@@ -151,11 +154,43 @@ func ExtensionFromString(name string) (Extension, error) {
 	return ExtensionBase, fmt.Errorf("no Extension with name '%s'", name)
 }
 
+// Pattern is a Nasm pattern as found in insns.dat.
+//
+//   [operands: opcodes]
+//
+// Operands describe the operands for this instruction:
+// r = register field in the modr/m
+// m = modr/m
+// v = VEX "v" field
+// i = immediate
+// s = register field of is4/imz2 field
+// - = implicit (unencoded) operand
+// x = indeX register of mib
+type Pattern struct {
+	Operands string
+	Opcodes  []string
+}
+
+func patternFromString(str string) (*Pattern, error) {
+	sep := strings.Index(str, ":")
+	if sep < 0 {
+		return &Pattern{
+			Operands: "",
+			Opcodes:  strings.Fields(str),
+		}, nil
+	}
+
+	return &Pattern{
+		Operands: str[:sep],
+		Opcodes:  strings.Fields(str[sep+1:]),
+	}, nil
+}
+
 // +gen slice:"Where"
 type Instruction struct {
 	Name      string
 	Operands  []string
-	Pattern   string
+	Pattern   Pattern
 	Flags     string
 	Extension Extension
 	OpSize    OpSize

@@ -66,6 +66,12 @@ next:
 			return fmt.Errorf("readInstructions: expected 4 fields got %d", len(fields)-1)
 		}
 
+		// The 3rd field is the instruction pattern
+		pattern, err := patternFromString(string(fields[3][1 : len(fields[3])-1]))
+		if err != nil {
+			return err
+		}
+
 		// The 4th field holds misc, comma separated, flags.
 		var opSizeFlags OpSize
 		var extension Extension
@@ -90,7 +96,7 @@ next:
 		instruction := Instruction{
 			Name:      string(fields[1]),
 			Operands:  strings.Split(string(fields[2]), ","),
-			Pattern:   string(fields[3]),
+			Pattern:   *pattern,
 			Flags:     string(fields[4]),
 			Extension: extension,
 			OpSize:    opSizeFlags,

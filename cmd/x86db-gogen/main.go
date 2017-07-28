@@ -201,8 +201,18 @@ func usage() {
 	filterFlags.PrintDefaults()
 }
 
+func blame(msg string) {
+	fmt.Fprintf(os.Stderr, msg)
+	usage()
+	os.Exit(1)
+}
+
 func main() {
 	db := x86db.NewDB()
+
+	if len(os.Args) < 2 {
+		blame("no command specified\n\n")
+	}
 
 	if err := filterFlags.Parse(os.Args[2:]); err != nil {
 		log.Fatal(err)
@@ -275,8 +285,6 @@ func main() {
 	}
 
 	if !handled {
-		fmt.Fprintf(os.Stderr, "unknown command '%s'\n\n", cmdName)
-		usage()
-		os.Exit(1)
+		blame(fmt.Sprintf("unknown command '%s'\n\n", cmdName))
 	}
 }
